@@ -4,10 +4,7 @@ tasks:
   - name: build pdf
     taskType: common
     shellScript: |
-      echo \$bar
-      grep -RP '\t' *  | tee | grep '.md' && exit 1; echo ok
-      python3 scripts/merge_by_toc.py
-      scripts/generate_pdf.sh
+      echo ${bar}
     secretVar: 
     - secretID: guoyu-foo
       key: bar
