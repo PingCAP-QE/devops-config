@@ -24,6 +24,7 @@ tasks:
   - name: Lint edited files
     taskType: common
     shellScript: |
+      npm config set registry http://registry.npm.taobao.org
       npm install -g markdownlint-cli@0.17.0
       git remote add upstream https://github.com/pingcap/docs-cn.git
       git fetch upstream
@@ -34,6 +35,7 @@ tasks:
   - name: Check internal links
     taskType: common
     shellScript: |
+      npm config set registry http://registry.npm.taobao.org
       ./scripts/verify-links.sh
     buildEnv:
       image: node:lts
@@ -41,6 +43,7 @@ tasks:
   - name: Check internal link anchorss
     taskType: common
     shellScript: |
+      npm config set registry http://registry.npm.taobao.org
       ./scripts/verify-link-anchors.sh
     buildEnv:
       image: node:lts
