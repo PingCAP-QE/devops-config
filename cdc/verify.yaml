@@ -24,7 +24,7 @@ tasks:
   - name: dm-unit-test
     taskType: unit-test
     shellScript: |
-      make dm_unit_test
+      make dm_unit_test_in_verify_ci
     buildEnv:
       image: hub.pingcap.net/jenkins/centos7_golang-1.16:latest
       request:
@@ -39,7 +39,7 @@ tasks:
   - name: cdc-unit-test
     taskType: unit-test
     shellScript: |
-      make cdc_unit_test
+      make unit_test_in_verify_ci
     buildEnv:
       image: hub.pingcap.net/jenkins/centos7_golang-1.16:latest
       request:
