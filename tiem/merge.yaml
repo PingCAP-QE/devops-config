@@ -1,0 +1,16 @@
+version: 1
+
+tasks:
+  - name: deploy tiem
+    taskType: common
+    shellScript: |
+      ansible-playbook tiem-deploy-playbook.yaml -vvv
+    secretVar:
+      - secretID: tiem-tiup-repo-ip
+        key: TIUP_TIEM_MIRROR_IP
+      - secretID: tiem-target-host-ip
+        key: TIEM_HOST_IP
+      - secretID: tiem-target-host-password
+        key: TIEM_HOST_PWD
+    buildEnv:
+      image: hub.pingcap.net/jenkins/docs-cn-checker:v0.0.1

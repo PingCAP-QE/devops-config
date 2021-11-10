@@ -1,0 +1,43 @@
+#Ansible Playbook for TiEM Deployment
+-
+  name: Deploy TiEM
+  hosts: tiem-central
+  tasks: 
+    - name: Set TiEM Mirror
+      command: /root/.tiup/bin/tiup mirror set http://${TIUP_TIEM_MIRROR_IP}:8080/tiup-repo/
+
+    - name: Destroy old TiEM
+      expect:
+        command: /root/.tiup/bin/tiup tiem destroy tiem-test
+        responses:
+          (.*)Do you want to continue?(.*): y
+      ignore_errors: yes
+
+    - name: Wait for TiEM destroyed
+      wait_for:
+        path: /etc/systemd/system/openapi-server-4116.service
+        state: absent
+
+    - name: Deploy TiEM
+      shell: |
+        set timeout 3
+        spawn /root/.tiup/bin/tiup tiem deploy tiem-test 1.0.0 tiem-mini.yaml -u root -p
+        expect timeout
+        send "${TIEM_HOST_PWD}\r"
+        expect timeout
+        send "y\r"
+        set timeout 120
+        expect timeout
+        exit 0
+      args:
+        executable: /usr/bin/expect
+
+    - name: Start TiEM
+      command: /root/.tiup/bin/tiup tiem start tiem-test
+
+    - name: Wait for TiEM started
+      wait_for:
+        timeout: 60
+
+    - name: Set official TiUP Mirror
+      command: /root/.tiup/bin/tiup mirror set https://tiup-mirrors.pingcap.com
