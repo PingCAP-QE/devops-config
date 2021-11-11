@@ -31,19 +31,19 @@ tasks:
     buildEnv:
       image: node:lts
 
-  - name: Check internal links
-    taskType: common
-    shellScript: |
-      ./scripts/verify-links.sh
-    buildEnv:
-      image: node:lts
+  # - name: Check internal links
+  #   taskType: common
+  #   shellScript: |
+  #     ./scripts/verify-links.sh
+  #   buildEnv:
+  #     image: node:lts
 
-  - name: Check internal link anchorss
-    taskType: common
-    shellScript: |
-      ./scripts/verify-link-anchors.sh
-    buildEnv:
-      image: node:lts
+  # - name: Check internal link anchorss
+  #   taskType: common
+  #   shellScript: |
+  #     ./scripts/verify-link-anchors.sh
+  #   buildEnv:
+  #     image: node:lts
 
   - name: "Check control characters"
     taskType: common
