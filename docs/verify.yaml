@@ -36,14 +36,14 @@ tasks:
   #   shellScript: |
   #     ./scripts/verify-links.sh
   #   buildEnv:
-  #     image: node:lts
+  #     image: hub.pingcap.net/jenkins/node:lts-with-ssh
 
   # - name: Check internal link anchorss
   #   taskType: common
   #   shellScript: |
   #     ./scripts/verify-link-anchors.sh
   #   buildEnv:
-  #     image: node:lts
+  #     image: hub.pingcap.net/jenkins/node:lts-with-ssh
 
   - name: "Check control characters"
     taskType: common
