@@ -59,7 +59,7 @@ tasks:
         vars:
         - value: "GOPATH"
           key: "/go"
-        Image: "golang:1.16"
+        image: "golang:1.16"
         resources:
             requests:
                 memory: "64Mi"
@@ -67,8 +67,8 @@ tasks:
             limits:
                 memory: "128Mi"
                 cpu: "500m"
-Notifies:
-    Larks: # optional, feishu notify, default send notify when pipeline failed
+notify:
+    lark: # optional, feishu notify, default send notify when pipeline failed
     - lifu.wu@pingcap.com 
     email: # optional, email notify, default send notify when pipeline failed
     - lifu.wu@pingcap.com
