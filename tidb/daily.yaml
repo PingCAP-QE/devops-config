@@ -7,7 +7,7 @@ triggers:
       defaultRef: "master"
 tasks:
     - taskName: "tidb-build" # shuold be unique in this pipeline
-      checkerName: "atom-build" # see checkerlist our support checker
+      checkerName: "build-check" # see checkerlist our support checker
       params:  # it was the parameters checkers needed
         shellScript: |
             make
@@ -16,30 +16,6 @@ tasks:
       timeout: 10 # optional, unit was minute, default to 60 min
       image: "hub.pingcap.net/jenkins/centos7_golang-1.16:latest"  # optional,default was hub.pingcap.net/jenkins/centos7_golang-1.16:latest
       resources:  # optional, default was request cpu 2, memory 4Gi, limit cpu 2, memory 4Gi
-          requests:
-              memory: "64Mi"
-              cpu: "250m"
-          limits:
-              memory: "128Mi"
-              cpu: "500m"
-
-    - taskName: "tidb-lint" # shuold be unique in this pipeline
-      checkerName: "atom-lint" # see checkerlist our support checker
-      params:
-        ShellScript: |
-            make lint
-      runAfter: 
-      - tidb-ut
-      retry: 1
-      timeout: 10
-      credentials:
-      - jenkinsID: docs-cn-aws-ak
-        key: AWS_ACCESS_KEY
-      vars:
-      - value: "GOPATH"
-        key: "/go"
-      image: "golang:1.16"
-      resources:
           requests:
               memory: "64Mi"
               cpu: "250m"
