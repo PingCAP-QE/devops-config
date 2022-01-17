@@ -17,11 +17,11 @@ tasks:
       image: "hub.pingcap.net/jenkins/centos7_golang-1.16:latest"  # optional,default was hub.pingcap.net/jenkins/centos7_golang-1.16:latest
       resources:  # optional, default was request cpu 2, memory 4Gi, limit cpu 2, memory 4Gi
           requests:
-              memory: "64Mi"
-              cpu: "250m"
+              memory: "2000Mi"
+              cpu: "1000m"
           limits:
-              memory: "128Mi"
-              cpu: "500m"
+              memory: "4000Mi"
+              cpu: "2000m"
 notify:
     lark:
     - lifu.wu@pingcap.com
