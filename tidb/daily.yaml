@@ -22,6 +22,178 @@ tasks:
           limits:
               memory: "4000Mi"
               cpu: "2000m"
+
+    - taskName: "tidb-cyclo" 
+      checkerName: "cyclo-check" 
+      params: 
+        shellScript: |
+            gocyclo -over 20 -avg -ignore "_test|pb.go" ./ | tee repo_cyclo.log
+      retry: 1  
+      timeout: 10 
+      image: "hub.pingcap.net/jenkins/centos7_golang-1.16:latest"  
+      resources:  
+          requests:
+              memory: "1000Mi"
+              cpu: "500m"
+          limits:
+              memory: "2000Mi"
+              cpu: "1000m"
+
+    - taskName: "tidb-gosec" 
+      checkerName: "gosec-check" 
+      params: 
+        shellScript: |
+            gosec -exclude-generated -fmt=junit-xml -out=results.xml -stdout -verbose=text -exclude=G103,G104,G204,G304,G307,G401,G404,G501,G505,G601 ./...
+        reportDir: results.xml
+      retry: 1  
+      timeout: 60 
+      image: "hub.pingcap.net/jenkins/centos7_golang-1.16:latest"  
+      resources:  
+          requests:
+              memory: "1000Mi"
+              cpu: "500m"
+          limits:
+              memory: "2000Mi"
+              cpu: "1000m"
+
+    - taskName: "tidb-ut" 
+      checkerName: "ut-cov-check" 
+      params: 
+        shellScript: |
+            export log_level=warn
+            mkdir -p coverage_report
+            make br_unit_test_in_verify_ci || true
+            mv test_coverage/br_cov.unit_test.out coverage_report/br.coverage
+            make dumpling_unit_test_in_verify_ci || true
+            mv test_coverage/dumpling_cov.unit_test.out coverage_report/dumpling.coverage
+            make gotest_in_verify_ci || true
+            mv test_coverage/tidb_cov.unit_test.out coverage_report/tidb.coverage
+        utReport: test_coverage/*.xml
+        covReport: coverage_report/*.coverage
+        coverageRate: 50
+      retry: 1  
+      timeout: 60 
+      image: "hub.pingcap.net/jenkins/centos7_golang-1.16:latest"  
+      resources:  
+          requests:
+              memory: "4000Mi"
+              cpu: "2000m"
+          limits:
+              memory: "8000Mi"
+              cpu: "4000m"
+      credentials:
+        - jenkinsID: codecov-token-tidb
+          key: CODECOV_TOKEN
+        - jenkinsID: codecov-api-token
+          key: CODECOV_API_TOKEN
+
+    - taskName: "tidb-race" 
+      checkerName: "ut-check" 
+      params: 
+        shellScript: |
+            cd ..
+            go get -u gotest.tools/gotestsum
+            cd -
+            export log_level=debug
+            cd tools/check
+            go build -o ../bin/failpoint-ctl github.com/pingcap/failpoint/failpoint-ctl
+            cd ../..
+            find $$PWD/ -type d | grep -vE "(\.git|tools)" | xargs tools/bin/failpoint-ctl enable
+            gotestsum -f standard-verbose --junitfile test.xml  --packages="$(go list ./... | grep -v github.com/pingcap/tidb/cmd)" -- -timeout 25m -race -coverprofile=cov.out | grep -A 10 -B 10 "\-\-\- Fail"
+            gocov convert cov.out | gocov-xml > coverage.xml
+        utReport: test.xml
+        covReport: coverage.xml
+      retry: 1  
+      timeout: 60 
+      image: "hub.pingcap.net/jenkins/centos7_golang-1.16:latest"  
+      resources:  
+          requests:
+              memory: "4000Mi"
+              cpu: "2000m"
+          limits:
+              memory: "8000Mi"
+              cpu: "4000m"
+
+    - taskName: "tidb-leak" 
+      checkerName: "ut-check" 
+      params: 
+        shellScript: |
+            cd ..
+            go get -u gotest.tools/gotestsum
+            cd -
+            export log_level=debug
+            cd tools/check
+            go build -o ../bin/failpoint-ctl github.com/pingcap/failpoint/failpoint-ctl
+            cd ../..
+            find $$PWD/ -type d | grep -vE "(\.git|tools)" | xargs tools/bin/failpoint-ctl enable
+            gotestsum --junitfile test.xml  --packages="$(go list ./... | grep -v github.com/pingcap/tidb/cmd)" -- -timeout 25m -p 8 -tags leak -coverprofile=cov.out | grep -A 10 -B 10 "\-\-\- Fail"
+            gocov convert cov.out | gocov-xml > coverage.xml
+        utReport: test.xml
+        covReport: coverage.xml
+      retry: 1  
+      timeout: 60 
+      image: "hub.pingcap.net/jenkins/centos7_golang-1.16:latest"  
+      resources:  
+          requests:
+              memory: "4000Mi"
+              cpu: "2000m"
+          limits:
+              memory: "8000Mi"
+              cpu: "4000m"
+
+    - taskName: "tidb-lint" 
+      checkerName: "lint-check" 
+      params: 
+        shellScript: |
+            golangci-lint run --out-format=junit-xml -v ./... > golangci-lint-report.xml
+        reportDir: golangci-lint-report.xml
+      retry: 1  
+      timeout: 60 
+      image: "hub.pingcap.net/jenkins/centos7_golang-1.16:latest"  
+      resources:  
+          requests:
+              memory: "1000Mi"
+              cpu: "500m"
+          limits:
+              memory: "2000Mi"
+              cpu: "1000m"
+
+    - taskName: "tidb-race-log" 
+      checkerName: "ut-check" 
+      params: 
+        shellScript: |
+            cd tools/check
+            go build -o ../bin/failpoint-ctl github.com/pingcap/failpoint/failpoint-ctl
+            cd ../..
+            find $$PWD/ -type d | grep -vE "(\.git|tools)" | xargs tools/bin/failpoint-ctl enable
+            go test -timeout 20m -race $(go list ./... | grep -v github.com/pingcap/tidb/cmd)
+        utReport: test.xml
+        covReport: coverage.xml
+      retry: 1  
+      timeout: 60 
+      image: "hub.pingcap.net/jenkins/centos7_golang-1.16:latest"  
+      resources:  
+          requests:
+              memory: "4000Mi"
+              cpu: "2000m"
+          limits:
+              memory: "8000Mi"
+              cpu: "4000m"
+
+    - taskName: "tidb-common-test" 
+      checkerName: "jenkins-it-trigger-check" 
+      params: 
+        itJobName: tidb_ghpr_common_test
+      retry: 1  
+      timeout: 120 
+      image: "hub.pingcap.net/jenkins/centos7_golang-1.16:latest"  
+      resources:  
+          requests:
+              memory: "100Mi"
+              cpu: "200m"
+          limits:
+              memory: "200Mi"
+              cpu: "400m"
 notify:
     lark:
     - lifu.wu@pingcap.com
