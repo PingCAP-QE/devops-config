@@ -152,11 +152,11 @@ tasks:
       image: "hub.pingcap.net/jenkins/centos7_golang-1.16:latest"  
       resources:  
           requests:
-              memory: "1000Mi"
-              cpu: "500m"
+              memory: "4000Mi"
+              cpu: "2000m"
           limits:
-              memory: "2000Mi"
-              cpu: "1000m"
+              memory: "4000Mi"
+              cpu: "2000m"
 
     - taskName: "tidb-race-log" 
       checkerName: "ut-check" 
