@@ -1,0 +1,54 @@
+version: 1
+
+tasks:
+  - name: tispark-fmt
+    taskType: common
+    shellScript: |
+      export LC_ALL=en_US.UTF-8
+      export LANG=en_US.UTF-8
+      export LANGUAGE=en_US.UTF-8
+      mvn mvn-scalafmt_2.12:format -Dscalafmt.skip=false -B
+      mvn com.coveo:fmt-maven-plugin:format -B
+      git diff --quiet
+      formatted="$?"
+      if [[ "${formatted}" -eq 1 ]]
+      then
+      echo "code format error, please run the following commands:"
+      echo "   mvn mvn-scalafmt_2.12:format -Dscalafmt.skip=false"
+      echo "   mvn com.coveo:fmt-maven-plugin:format"
+      exit 1
+      fi
+    buildEnv:
+      image: hub.pingcap.net/jenkins/centos7_golang-1.13_java:latest
+      request:
+        cpu: 2
+        mem: 4Gi
+      limit:
+        cpu: 2
+        mem: 4Gi
+
+  - name: tispark-build
+    taskType: common
+    shellScript: |
+      mvn clean package -Dmaven.test.skip=true -B
+    buildEnv:
+      image: hub.pingcap.net/jenkins/centos7_golang-1.13_java:latest
+      request:
+        cpu: 2
+        mem: 4Gi
+      limit:
+        cpu: 2
+        mem: 4Gi
+
+  - name: tispark-ut
+    taskType: common
+    shellScript: |
+      mvn test -am -pl tikv-client -DsomeModule.test.excludes="**/txn/*" -B
+    buildEnv:
+      image: hub.pingcap.net/jenkins/centos7_golang-1.13_java:latest
+      request:
+        cpu: 4
+        mem: 8Gi
+      limit:
+        cpu: 4
+        mem: 8Gi
