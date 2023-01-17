@@ -20,12 +20,10 @@ tasks:
           sudo bash -c 'echo "222.222.95.49 uc.qbox.me" >> /etc/hosts';
           if [ "${TARGET_BRANCH}" = "master" ]; then
             python3 scripts/upload.py output.pdf tidb-dev-en-manual.pdf;
-          elif [ "${TARGET_BRANCH}" = "release-6.1" ]; then 
+          elif [ "${TARGET_BRANCH}" = "release-6.5" ]; then
+            python3 scripts/upload.py output.pdf tidb-stable-en-manual.pdf;
             python3 scripts/merge_by_toc.py TOC-tidb-cloud.md doc_cloud.md tidb-cloud; scripts/generate_cloud_pdf.sh; 
             python3 scripts/upload.py output_cloud.pdf tidbcloud-en-manual.pdf; 
-            python3 scripts/upload.py output.pdf tidb-v6.1-en-manual.pdf; 
-          elif [ "${TARGET_BRANCH}" = "release-6.5" ]; then 
-            python3 scripts/upload.py output.pdf tidb-stable-en-manual.pdf;
           elif case "${TARGET_BRANCH}" in release-*) ;; *) false;; esac; then
             python3 scripts/upload.py output.pdf tidb-v${TARGET_BRANCH##*-}-en-manual.pdf;
           fi
