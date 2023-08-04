@@ -24,7 +24,7 @@ tasks:
           if [ "${TARGET_BRANCH}" = "master" ]; then
             python3 scripts/upload.py output_en.pdf tidb-in-kubernetes-dev-en-manual.pdf;
             python3 scripts/upload.py output_zh.pdf tidb-in-kubernetes-dev-zh-manual.pdf;
-          elif [ "${TARGET_BRANCH}" = "release-1.4" ]; then
+          elif [ "${TARGET_BRANCH}" = "release-1.5" ]; then
             python3 scripts/upload.py output_en.pdf tidb-in-kubernetes-stable-en-manual.pdf;
             python3 scripts/upload.py output_zh.pdf tidb-in-kubernetes-stable-zh-manual.pdf;
           elif case "${TARGET_BRANCH}" in release-*) ;; *) false;; esac; then
