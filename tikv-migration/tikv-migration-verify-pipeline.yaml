@@ -18,7 +18,7 @@ tasks:
             make unit_test_in_verify_ci
         utReport: cdc/cdc-junit-report.xml
         covReport: cdc/cdc-coverage.xml
-      image: "hub.pingcap.net/jenkins/centos7_golang-1.20:latest"
+      image: "hub.pingcap.net/jenkins/centos7_golang-1.21:latest"
       resources:  
           requests:
               memory: "8000Mi"
@@ -36,7 +36,7 @@ tasks:
         shellScript: |
             cd cdc/
             make integration_test
-      image: "hub.pingcap.net/jenkins/centos7_golang-1.20:latest"
+      image: "hub.pingcap.net/jenkins/centos7_golang-1.21:latest"
       resources:  
           requests:
               memory: "16000Mi"
